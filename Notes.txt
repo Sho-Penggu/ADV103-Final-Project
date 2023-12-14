@@ -84,3 +84,152 @@ def put(self, request, pk, format=None):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+/* HOME.js */
+
+
+      <section className="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th> Id </th>
+              <th> Name</th>
+              <th> Date </th>
+              <th> Time </th>
+              <th> Subject & Section</th>
+              <th> Lab </th>
+              <th> Reason </th>
+              <th> Action </th>
+              <th>
+                <button onClick={functionopenpopup} color="primary" variant="contained">
+                  <img src={addIcon} alt="Icon" />
+                </button>
+              </th>
+              <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>Sanctioned Student Info
+                  <IconButton onClick={closepopup} style={{ float: 'right' }}>
+                    <CloseIcon color="primary" />
+                  </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                  <Stack spacing={2} margin={2}>
+                    <TextField variant="outlined" label="Name">
+                      {sanctions.map((sanction, index) => (
+                        <span key={index}>{sanction.body}</span>
+                      ))}
+                    </TextField>
+                    <TextField variant="outlined" label="Date"></TextField>
+                    <TextField variant="outlined" label="Time"></TextField>
+                    <TextField variant="outlined" label="Subject & Section"></TextField>
+                    <TextField
+                      id="outlined-select-lab"
+                      select
+                      label="Lab"
+                      defaultValue="1"
+                    >
+                      {lab.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <TextField
+                      id="outlined-select-reason"
+                      select
+                      label="Reason"
+                    >
+                      {reason.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <Button
+                      style={{
+                        backgroundColor: '#2B3467',
+                        color: '#f8f9fa',
+                        fontSize: '1.5rem',
+                        borderRadius: '10px',
+                        fontWeight: 'bold',
+                      }}
+                      variant="contained"
+                    >
+                      Submit
+                    </Button>
+                  </Stack>
+                </DialogContent>
+                <DialogActions></DialogActions>
+              </Dialog>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td> 1 </td>
+              <td>
+                {sanctions.map((sanction, index) => (
+                  <span key={index}>{sanction.body}</span>
+                ))}
+              </td>
+              <td> Nov 25, 2023 </td>
+              <td> 2:34 PM </td>
+              <td> ADV 103-3B </td>
+              <td> 3 </td>
+              <td>
+                <p className="status cancelled">Facebook</p>
+              </td>
+              <td>
+                <button onClick={() => (1)}>
+                  <img src={deleteIcon} alt="Icon" />
+                </button>
+                <button style={{ marginLeft: '10px' }} onClick={() => (1)}>
+                  <img src={editIcon} alt="Icon" />
+                </button>
+              </td>
+              <td> </td>
+            </tr>
+
+            <tr>
+              <td> 2 </td>
+              <td> Albert Villarmia </td>
+              <td> Nov 27, 2023 </td>
+              <td> 5:34 PM </td>
+              <td> SIA 101-3B </td>
+              <td> 2 </td>
+              <td>
+                <p className="status cancelled">Games</p>
+              </td>
+              <td>
+                <button onClick={() => (1)}>
+                  <img src={deleteIcon} alt="Icon" />
+                </button>
+                <button style={{ marginLeft: '10px' }} onClick={() => (1)}>
+                  <img src={editIcon} alt="Icon" />
+                </button>
+              </td>
+              <td> </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+
+
+useEffect(() => {
+    getSanctions();
+  }, []);
+
+
+const getSanctions = async () => {
+    try {
+      let response = await fetch('api/home');
+      let data = await response.json();
+      console.log('DATA:', data);
+      setSanctions(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+
+
