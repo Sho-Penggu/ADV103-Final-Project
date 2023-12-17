@@ -231,5 +231,90 @@ const getSanctions = async () => {
     }
   };
 
+Model:
+class Sanction(models.Model):
+    id = models.AutoField(primary_key=True)
+    body = models.TextField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.body[0:50]
+
+
+
+Views:
+
+class Sanction(ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+    serializer_class = SanctionSerializer
+    
+    def get_queryset(self):
+        return self.serializer_class.Meta.model.objects.all()
+    
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    def post(self, request, format=None):
+        serializer = SanctionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, pk, format=None):
+        sanction = get_object_or_404(self.serializer_class.Meta.model, id=pk)
+        serializer = SanctionSerializer(sanction, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk, format=None):
+        sanction = get_object_or_404(self.serializer_class.Meta.model, id=pk)
+        serializer = SanctionSerializer(sanction, data=request.data, partial=True)  # Make sure to set partial=True for PATCH
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            article = self.serializer_class.Meta.model.objects.get(id=pk)
+            serliazer = self.serializer_class(article)
+            return Response(serliazer.data)
+        except self.serializer_class.Meta.model.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            self.serializer_class.Meta.model.objects.get(id=pk).delete()
+            return Response(status=status.HTTP_200_OK)
+        except self.serializer_class.Meta.model.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+Home.js
+
+const postData = async () => {
+    try {
+      const data = { 
+        body: inputValue,
+      }; // Ensure inputValue has the intended data
+      const response = await client.post('/api/home', data);
+      
+      if (response.status === 200) {
+        console.log('Data posted successfully:', response.data);
+        // Handle success, if needed
+      } else {
+        console.error('Failed to post data:', response.data);
+        // Handle errors, if needed
+      }
+    } catch (error) {
+      console.error('Error posting data:', error);
+      // Handle errors, if needed
+    }
+  };
 
